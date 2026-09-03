@@ -1,0 +1,1068 @@
+import fs from 'fs';
+import path from 'path';
+
+const MFV_BASE = {
+  version: 'BASE V1.0 - REAL PCM',
+  sourceFile: 'MFV_dados_base_google_ai_studio.json',
+  importedAt: '2026-09-01T08:00:00.000Z',
+  importedBy: 'Eng. Ricardo Martins (Diretoria PCM)',
+  description: 'Conversão estruturada da base Excel de manutenção industrial de refrigeração e climatização do PCM.',
+  
+  // 1. MODELO: Estrutura de consolidação das ordens
+  MODELO: [
+    {
+      ORDEM: 'ORD-2026-1001',
+      Plano: 'PLN-PMOC-001',
+      'Texto item man.': 'Inspeção Semanal CAG & Níveis de Óleo Compressor 01',
+      Tipo: 'PREVENTIVA',
+      'Data minima': '2026-09-01',
+      'Dta.iníc.progr.': '2026-09-03',
+      'Data maxima': '2026-09-05',
+      Local: 'CAG-TAMBORE-SP',
+      Local2: 'SALA-CHILLERS-CENTRAL',
+      responsavel: 'Carlos Souza',
+      equipe: 'Refrigeração Pesada',
+      turno: 'Turno 1 - Manhã',
+      frequencia: '1S',
+      status: 'PROGRAMADO'
+    },
+    {
+      ORDEM: 'ORD-2026-1002',
+      Plano: 'PLN-PMOC-002',
+      'Texto item man.': 'Revisão Mensal Filtros e Correias AHU-01 DataCenter',
+      Tipo: 'PREVENTIVA',
+      'Data minima': '2026-09-05',
+      'Dta.iníc.progr.': '2026-09-08',
+      'Data maxima': '2026-09-12',
+      Local: 'NEXUS-DC-SP',
+      Local2: 'SALA-BRANCA-P1',
+      responsavel: 'Juliano Mendonça',
+      equipe: 'HVAC Conforto & Precisão',
+      turno: 'Turno Central - Comercial',
+      frequencia: '1M',
+      status: 'PROGRAMADO'
+    },
+    {
+      ORDEM: 'ORD-2026-1003',
+      Plano: 'PLN-PMOC-003',
+      'Texto item man.': 'Análise Termográfica e Reaperto Elétrico Chiller York YK',
+      Tipo: 'PREVENTIVA',
+      'Data minima': '2026-09-08',
+      'Dta.iníc.progr.': '2026-09-10',
+      'Data maxima': '2026-09-15',
+      Local: 'CAG-TAMBORE-SP',
+      Local2: 'SALA-CHILLERS-CENTRAL',
+      responsavel: 'Carlos Souza',
+      equipe: 'Refrigeração Pesada',
+      turno: 'Turno 1 - Manhã',
+      frequencia: '3M',
+      status: 'PROGRAMADO'
+    },
+    {
+      ORDEM: 'ORD-2026-1004',
+      Plano: 'PLN-PMOC-004',
+      'Texto item man.': 'Checagem de Estanqueidade e Válvulas de Alívio Amônia NH3',
+      Tipo: 'PREVENTIVA',
+      'Data minima': '2026-09-02',
+      'Dta.iníc.progr.': '2026-09-04',
+      'Data maxima': '2026-09-06',
+      Local: 'FRIG-BOI-DOURADO-GO',
+      Local2: 'SALA-MAQUINAS-NH3',
+      responsavel: 'Rodrigo Camargo',
+      equipe: 'Refrigeração Pesada',
+      turno: 'Turno 1 - Manhã',
+      frequencia: '1S',
+      status: 'EM_ANDAMENTO'
+    },
+    {
+      ORDEM: 'ORD-2026-1005',
+      Plano: 'PLN-PMOC-005',
+      'Texto item man.': 'Calibração Transmissores de Pressão Danfoss CAG',
+      Tipo: 'PREVENTIVA',
+      'Data minima': '2026-09-12',
+      'Dta.iníc.progr.': '2026-09-16',
+      'Data maxima': '2026-09-20',
+      Local: 'CAG-TAMBORE-SP',
+      Local2: 'SALA-COMANDOS-ELET',
+      responsavel: 'Juliano Mendonça',
+      equipe: 'Automação & Instrumentação',
+      turno: 'Turno Central - Comercial',
+      frequencia: '6M',
+      status: 'PROGRAMADO'
+    },
+    {
+      ORDEM: 'ORD-2026-1006',
+      Plano: 'PLN-PMOC-006',
+      'Texto item man.': 'Limpeza Química Torre de Resfriamento BAC-01',
+      Tipo: 'PREVENTIVA',
+      'Data minima': '2026-08-25',
+      'Dta.iníc.progr.': '2026-08-28',
+      'Data maxima': '2026-09-02',
+      Local: 'CAG-TAMBORE-SP',
+      Local2: 'COBERTURA-TORRES',
+      responsavel: 'Lucas Penteado',
+      equipe: 'Mecânica Geral',
+      turno: 'Turno 2 - Tarde',
+      frequencia: '1M',
+      status: 'EXECUTADO'
+    },
+    {
+      ORDEM: 'ORD-2026-1007',
+      Plano: 'PLN-PMOC-007',
+      'Texto item man.': 'Substituição Selo Mecânico Bomba KSB BAG-02',
+      Tipo: 'CORRETIVA',
+      'Data minima': '2026-08-29',
+      'Dta.iníc.progr.': '2026-08-30',
+      'Data maxima': '2026-09-01',
+      Local: 'CAG-TAMBORE-SP',
+      Local2: 'SUB-SOLO-BOMBAS',
+      responsavel: 'Carlos Souza',
+      equipe: 'Refrigeração Pesada',
+      turno: 'Turno 1 - Manhã',
+      frequencia: 'EVENTUAL',
+      status: 'EXECUTADO'
+    },
+    {
+      ORDEM: 'ORD-2026-1008',
+      Plano: 'PLN-PMOC-008',
+      'Texto item man.': 'Inspeção Semanal Condensador Evaporativo Evapco',
+      Tipo: 'PREVENTIVA',
+      'Data minima': '2026-09-01',
+      'Dta.iníc.progr.': '2026-09-03',
+      'Data maxima': '2026-09-05',
+      Local: 'FRIG-BOI-DOURADO-GO',
+      Local2: 'COBERTURA-AMONIA',
+      responsavel: 'Rodrigo Camargo',
+      equipe: 'Refrigeração Pesada',
+      turno: 'Turno 1 - Manhã',
+      frequencia: '1S',
+      status: 'PROGRAMADO'
+    },
+    {
+      ORDEM: 'ORD-2026-1009',
+      Plano: 'PLN-PMOC-009',
+      'Texto item man.': 'Revisão Anual Cabeçote e Válvulas Compressor Sabroe NH3',
+      Tipo: 'PREVENTIVA',
+      'Data minima': '2026-09-15',
+      'Dta.iníc.progr.': '2026-09-22',
+      'Data maxima': '2026-09-30',
+      Local: 'FRIG-BOI-DOURADO-GO',
+      Local2: 'SALA-COMPRESSORES-P2',
+      responsavel: 'Carlos Souza',
+      equipe: 'Refrigeração Pesada',
+      turno: 'Turno 1 - Manhã',
+      frequencia: '1A',
+      status: 'PROGRAMADO'
+    },
+    {
+      ORDEM: 'ORD-2026-1010',
+      Plano: 'PLN-PMOC-010',
+      'Texto item man.': 'Higienização de Serpentinas e Bandejas Fan Coils Escritório',
+      Tipo: 'PREVENTIVA',
+      'Data minima': '2026-09-03',
+      'Dta.iníc.progr.': '2026-09-05',
+      'Data maxima': '2026-09-08',
+      Local: 'HOSP-SAO-LUIZ-SP',
+      Local2: 'BLOCO-CIRURGICO-HVAC',
+      responsavel: 'Juliano Mendonça',
+      equipe: 'HVAC Conforto & Precisão',
+      turno: 'Turno 3 - Noturno',
+      frequencia: '1M',
+      status: 'PROGRAMADO'
+    }
+  ],
+
+  // 2. DASH: Indicadores de PCM
+  DASH: {
+    totalPlanos: 48,
+    planosAtivos: 44,
+    planosExcluidos: 4,
+    ordensAbertas: 18,
+    ordensConcluidas: 142,
+    ordensAtrasadas: 2,
+    preventivasCount: 135,
+    corretivasCount: 25,
+    backlogDias: 3.2,
+    slaPercent: 98.2,
+    mttrHoras: 2.8,
+    mtbfHoras: 840,
+    cumprimentoProgramacaoPercent: 96.4,
+    totalHorasPrevistas: 520,
+    totalHorasRealizadas: 498.5,
+    porFrequencia: {
+      '1S': 16,
+      '5S': 8,
+      '1M': 12,
+      '13S': 4,
+      '3M': 3,
+      '6M': 2,
+      '1A': 2,
+      '12M': 1
+    },
+    porTurno: {
+      'Turno 1 - Manhã': 22,
+      'Turno 2 - Tarde': 12,
+      'Turno Central - Comercial': 10,
+      'Turno 3 - Noturno': 4
+    },
+    porEquipe: {
+      'Refrigeração Pesada': 24,
+      'HVAC Conforto & Precisão': 14,
+      'Automação & Instrumentação': 6,
+      'Mecânica Geral': 4
+    },
+    porLocal: {
+      'CAG-TAMBORE-SP': 20,
+      'FRIG-BOI-DOURADO-GO': 15,
+      'NEXUS-DC-SP': 8,
+      'HOSP-SAO-LUIZ-SP': 5
+    },
+    porTipo: {
+      'PREVENTIVA PMOC': 40,
+      'PREDITIVA TERMO/VIB': 4,
+      'CORRETIVA EMERGENCIAL': 4
+    }
+  },
+
+  // 3. Programação: Programação Anual de Refrigeração
+  Programacao: [
+    {
+      id: 'PRG-2026-001',
+      semana: 'S35',
+      frequencia: '1S',
+      plano: 'PLN-PMOC-001',
+      ordem: 'ORD-2026-1001',
+      equipamento: 'Chiller Centrífugo York YK-500TR',
+      local: 'CAG-TAMBORE-SP',
+      responsavel: 'Carlos Souza',
+      datas: '2026-09-03',
+      programacao: 'Inspeção Semanal CAG & Níveis de Óleo Compressor 01',
+      turno: 'Turno 1 - Manhã',
+      equipe: 'Refrigeração Pesada',
+      status: 'PROGRAMADO',
+      horasPrevistas: 2.5
+    },
+    {
+      id: 'PRG-2026-002',
+      semana: 'S35',
+      frequencia: '1S',
+      plano: 'PLN-PMOC-004',
+      ordem: 'ORD-2026-1004',
+      equipamento: 'Compressor Parafuso Sabroe VMY-336 NH3',
+      local: 'FRIG-BOI-DOURADO-GO',
+      responsavel: 'Rodrigo Camargo',
+      datas: '2026-09-04',
+      programacao: 'Checagem de Estanqueidade e Válvulas de Alívio Amônia NH3',
+      turno: 'Turno 1 - Manhã',
+      equipe: 'Refrigeração Pesada',
+      status: 'EM_ANDAMENTO',
+      horasPrevistas: 3.0
+    },
+    {
+      id: 'PRG-2026-003',
+      semana: 'S36',
+      frequencia: '1M',
+      plano: 'PLN-PMOC-002',
+      ordem: 'ORD-2026-1002',
+      equipamento: 'Fan Coil Precisão Stulz CyberAir 3',
+      local: 'NEXUS-DC-SP',
+      responsavel: 'Juliano Mendonça',
+      datas: '2026-09-08',
+      programacao: 'Revisão Mensal Filtros e Correias AHU-01 DataCenter',
+      turno: 'Turno Central - Comercial',
+      equipe: 'HVAC Conforto & Precisão',
+      status: 'PROGRAMADO',
+      horasPrevistas: 4.0
+    },
+    {
+      id: 'PRG-2026-004',
+      semana: 'S36',
+      frequencia: '3M',
+      plano: 'PLN-PMOC-003',
+      ordem: 'ORD-2026-1003',
+      equipamento: 'Chiller Centrífugo York YK-500TR',
+      local: 'CAG-TAMBORE-SP',
+      responsavel: 'Carlos Souza',
+      datas: '2026-09-10',
+      programacao: 'Análise Termográfica e Reaperto Elétrico Chiller York YK',
+      turno: 'Turno 1 - Manhã',
+      equipe: 'Refrigeração Pesada',
+      status: 'PROGRAMADO',
+      horasPrevistas: 3.5
+    },
+    {
+      id: 'PRG-2026-005',
+      semana: 'S37',
+      frequencia: '6M',
+      plano: 'PLN-PMOC-005',
+      ordem: 'ORD-2026-1005',
+      equipamento: 'Painel Central Automação Carel pCO5+',
+      local: 'CAG-TAMBORE-SP',
+      responsavel: 'Juliano Mendonça',
+      datas: '2026-09-16',
+      programacao: 'Calibração Transmissores de Pressão Danfoss CAG',
+      turno: 'Turno Central - Comercial',
+      equipe: 'Automação & Instrumentação',
+      status: 'PROGRAMADO',
+      horasPrevistas: 5.0
+    },
+    {
+      id: 'PRG-2026-006',
+      semana: 'S34',
+      frequencia: '1M',
+      plano: 'PLN-PMOC-006',
+      ordem: 'ORD-2026-1006',
+      equipamento: 'Torre de Resfriamento BAC VXT-150',
+      local: 'CAG-TAMBORE-SP',
+      responsavel: 'Lucas Penteado',
+      datas: '2026-08-28',
+      programacao: 'Limpeza Química Torre de Resfriamento BAC-01',
+      turno: 'Turno 2 - Tarde',
+      equipe: 'Mecânica Geral',
+      status: 'EXECUTADO',
+      horasPrevistas: 6.0
+    },
+    {
+      id: 'PRG-2026-007',
+      semana: 'S35',
+      frequencia: '1S',
+      plano: 'PLN-PMOC-008',
+      ordem: 'ORD-2026-1008',
+      equipamento: 'Condensador Evaporativo Evapco ATC-M',
+      local: 'FRIG-BOI-DOURADO-GO',
+      responsavel: 'Rodrigo Camargo',
+      datas: '2026-09-03',
+      programacao: 'Inspeção Semanal Condensador Evaporativo Evapco',
+      turno: 'Turno 1 - Manhã',
+      equipe: 'Refrigeração Pesada',
+      status: 'PROGRAMADO',
+      horasPrevistas: 2.0
+    },
+    {
+      id: 'PRG-2026-008',
+      semana: 'S38',
+      frequencia: '1A',
+      plano: 'PLN-PMOC-009',
+      ordem: 'ORD-2026-1009',
+      equipamento: 'Compressor Recíproco Mycom N8WA NH3',
+      local: 'FRIG-BOI-DOURADO-GO',
+      responsavel: 'Carlos Souza',
+      datas: '2026-09-22',
+      programacao: 'Revisão Anual Cabeçote e Válvulas Compressor Sabroe NH3',
+      turno: 'Turno 1 - Manhã',
+      equipe: 'Refrigeração Pesada',
+      status: 'PROGRAMADO',
+      horasPrevistas: 12.0
+    },
+    {
+      id: 'PRG-2026-009',
+      semana: 'S36',
+      frequencia: '1M',
+      plano: 'PLN-PMOC-010',
+      ordem: 'ORD-2026-1010',
+      equipamento: 'Fan Coil Hidrônico Carrier 39HQ',
+      local: 'HOSP-SAO-LUIZ-SP',
+      responsavel: 'Juliano Mendonça',
+      datas: '2026-09-05',
+      programacao: 'Higienização de Serpentinas e Bandejas Fan Coils Escritório',
+      turno: 'Turno 3 - Noturno',
+      equipe: 'HVAC Conforto & Precisão',
+      status: 'PROGRAMADO',
+      horasPrevistas: 4.0
+    },
+    {
+      id: 'PRG-2026-010',
+      semana: 'S37',
+      frequencia: '5S',
+      plano: 'PLN-PMOC-011',
+      ordem: 'ORD-2026-1011',
+      equipamento: 'Bomba de Água Gelada KSB Megaflow 65-200',
+      local: 'CAG-TAMBORE-SP',
+      responsavel: 'Lucas Penteado',
+      datas: '2026-09-18',
+      programacao: 'Alinhamento a Laser e Medição de Vibração BAG-01',
+      turno: 'Turno 2 - Tarde',
+      equipe: 'Mecânica Geral',
+      status: 'PROGRAMADO',
+      horasPrevistas: 3.5
+    },
+    {
+      id: 'PRG-2026-011',
+      semana: 'S34',
+      frequencia: '1S',
+      plano: 'PLN-PMOC-012',
+      ordem: 'ORD-2026-1012',
+      equipamento: 'Válvula Reguladora Danfoss PM3',
+      local: 'FRIG-BOI-DOURADO-GO',
+      responsavel: 'Rodrigo Camargo',
+      datas: '2026-08-30',
+      programacao: 'Checagem de Pressostatos de Alta e Baixa NH3',
+      turno: 'Turno 1 - Manhã',
+      equipe: 'Refrigeração Pesada',
+      status: 'ATRASADO',
+      horasPrevistas: 2.0
+    },
+    {
+      id: 'PRG-2026-012',
+      semana: 'S34',
+      frequencia: '13S',
+      plano: 'PLN-PMOC-013',
+      ordem: 'ORD-2026-1013',
+      equipamento: 'Desumidificador Munters Bry-Air',
+      local: 'NEXUS-DC-SP',
+      responsavel: 'Juliano Mendonça',
+      datas: '2026-08-27',
+      programacao: 'Troca de Roda Dessecante e Inspeção de Queimador',
+      turno: 'Turno Central - Comercial',
+      equipe: 'HVAC Conforto & Precisão',
+      status: 'EXECUTADO',
+      horasPrevistas: 8.0
+    }
+  ],
+
+  // 4. IP24: Ordens de manutenção e programação SAP
+  IP24: [
+    {
+      Ordem: 'ORD-2026-1001',
+      'Plano manut.': 'PLN-PMOC-001',
+      'Loc.instalação': 'CAG-TAMBORE-SP/CHILLER-01',
+      'Texto item man.': 'Inspeção Semanal CAG & Níveis de Óleo Compressor 01',
+      'CenTrab respon.': 'MEC-REF-PESADA',
+      'Tipo de ordem': 'PM02',
+      'Cen.localiz.': 'BR-SP-01',
+      'Dta.iníc.progr.': '2026-09-03',
+      'Data encermto.': '',
+      COD: 'MP-SEM-01',
+      status: 'LIBERADA'
+    },
+    {
+      Ordem: 'ORD-2026-1002',
+      'Plano manut.': 'PLN-PMOC-002',
+      'Loc.instalação': 'NEXUS-DC-SP/AHU-PRECISAO-01',
+      'Texto item man.': 'Revisão Mensal Filtros e Correias AHU-01 DataCenter',
+      'CenTrab respon.': 'HVAC-PRECISAO',
+      'Tipo de ordem': 'PM02',
+      'Cen.localiz.': 'BR-SP-02',
+      'Dta.iníc.progr.': '2026-09-08',
+      'Data encermto.': '',
+      COD: 'MP-MEN-02',
+      status: 'LIBERADA'
+    },
+    {
+      Ordem: 'ORD-2026-1003',
+      'Plano manut.': 'PLN-PMOC-003',
+      'Loc.instalação': 'CAG-TAMBORE-SP/CHILLER-01',
+      'Texto item man.': 'Análise Termográfica e Reaperto Elétrico Chiller York YK',
+      'CenTrab respon.': 'ELETR-PREDITIVA',
+      'Tipo de ordem': 'PM02',
+      'Cen.localiz.': 'BR-SP-01',
+      'Dta.iníc.progr.': '2026-09-10',
+      'Data encermto.': '',
+      COD: 'MP-TRI-01',
+      status: 'PROGRAMADA'
+    },
+    {
+      Ordem: 'ORD-2026-1004',
+      'Plano manut.': 'PLN-PMOC-004',
+      'Loc.instalação': 'FRIG-BOI-DOURADO-GO/SALA-NH3-01',
+      'Texto item man.': 'Checagem de Estanqueidade e Válvulas de Alívio Amônia NH3',
+      'CenTrab respon.': 'MEC-REF-PESADA',
+      'Tipo de ordem': 'PM02',
+      'Cen.localiz.': 'BR-GO-01',
+      'Dta.iníc.progr.': '2026-09-04',
+      'Data encermto.': '',
+      COD: 'MP-SEM-02',
+      status: 'EM_EXECUCAO'
+    },
+    {
+      Ordem: 'ORD-2026-1006',
+      'Plano manut.': 'PLN-PMOC-006',
+      'Loc.instalação': 'CAG-TAMBORE-SP/TORRE-01',
+      'Texto item man.': 'Limpeza Química Torre de Resfriamento BAC-01',
+      'CenTrab respon.': 'MEC-GERAL',
+      'Tipo de ordem': 'PM02',
+      'Cen.localiz.': 'BR-SP-01',
+      'Dta.iníc.progr.': '2026-08-28',
+      'Data encermto.': '2026-08-28',
+      COD: 'MP-MEN-03',
+      status: 'ENCERRADA'
+    },
+    {
+      Ordem: 'ORD-2026-1007',
+      'Plano manut.': 'PLN-PMOC-007',
+      'Loc.instalação': 'CAG-TAMBORE-SP/BOMBA-AGUA-GELADA-02',
+      'Texto item man.': 'Substituição Selo Mecânico Bomba KSB BAG-02',
+      'CenTrab respon.': 'MEC-REF-PESADA',
+      'Tipo de ordem': 'PM01',
+      'Cen.localiz.': 'BR-SP-01',
+      'Dta.iníc.progr.': '2026-08-30',
+      'Data encermto.': '2026-08-31',
+      COD: 'MC-EMERG-01',
+      status: 'ENCERRADA'
+    }
+  ],
+
+  // 5. IW38: Histórico Operacional das Ordens SAP
+  IW38: [
+    {
+      Ordem: 'ORD-2026-1001',
+      'Texto breve': 'Inspeção Semanal CAG & Níveis de Óleo Compressor 01',
+      'Status sistema': 'LIB IMPR',
+      'Dt.real fim': '',
+      StatusUsuár: 'DESP',
+      'Dt.referência': '2026-09-03',
+      Status: 'Em Aberto',
+      cenTrab: 'MEC-REF-PESADA'
+    },
+    {
+      Ordem: 'ORD-2026-1002',
+      'Texto breve': 'Revisão Mensal Filtros e Correias AHU-01 DataCenter',
+      'Status sistema': 'LIB',
+      'Dt.real fim': '',
+      StatusUsuár: 'PROG',
+      'Dt.referência': '2026-09-08',
+      Status: 'Em Aberto',
+      cenTrab: 'HVAC-PRECISAO'
+    },
+    {
+      Ordem: 'ORD-2026-1003',
+      'Texto breve': 'Análise Termográfica e Reaperto Elétrico Chiller York YK',
+      'Status sistema': 'ABER',
+      'Dt.real fim': '',
+      StatusUsuár: 'AGTO',
+      'Dt.referência': '2026-09-10',
+      Status: 'Em Aberto',
+      cenTrab: 'ELETR-PREDITIVA'
+    },
+    {
+      Ordem: 'ORD-2026-1004',
+      'Texto breve': 'Checagem de Estanqueidade e Válvulas de Alívio Amônia NH3',
+      'Status sistema': 'LIB IMPR',
+      'Dt.real fim': '',
+      StatusUsuár: 'EXEC',
+      'Dt.referência': '2026-09-04',
+      Status: 'Em Execução',
+      cenTrab: 'MEC-REF-PESADA'
+    },
+    {
+      Ordem: 'ORD-2026-1006',
+      'Texto breve': 'Limpeza Química Torre de Resfriamento BAC-01',
+      'Status sistema': 'ENCE CONF',
+      'Dt.real fim': '2026-08-28',
+      StatusUsuár: 'CONC',
+      'Dt.referência': '2026-08-28',
+      Status: 'Concluído',
+      cenTrab: 'MEC-GERAL'
+    },
+    {
+      Ordem: 'ORD-2026-1007',
+      'Texto breve': 'Substituição Selo Mecânico Bomba KSB BAG-02',
+      'Status sistema': 'ENCE CONF',
+      'Dt.real fim': '2026-08-31',
+      StatusUsuár: 'CONC',
+      'Dt.referência': '2026-08-30',
+      Status: 'Concluído',
+      cenTrab: 'MEC-REF-PESADA'
+    },
+    {
+      Ordem: 'ORD-2026-0995',
+      'Texto breve': 'Substituição Contator Siemens Chiller Trane RTAC',
+      'Status sistema': 'ENCE CONF',
+      'Dt.real fim': '2026-08-20',
+      StatusUsuár: 'CONC',
+      'Dt.referência': '2026-08-20',
+      Status: 'Concluído',
+      cenTrab: 'ELETR-PREDITIVA'
+    }
+  ],
+
+  // 6. Planos ativos: Tabela mestre de planos
+  PlanosAtivos: [
+    {
+      'Plano manut.': 'PLN-PMOC-001',
+      GrpLisTar: 'PMOC-CAG-01',
+      'Texto item man.': 'Inspeção Semanal CAG & Níveis de Óleo Compressor 01',
+      COD: 'MP-SEM-01',
+      'Loc.instalação': 'CAG-TAMBORE-SP/CHILLER-01',
+      'CenTrab respon.': 'MEC-REF-PESADA',
+      'Tipo de ordem': 'PM02',
+      Frequencia: '1S',
+      Tempo: 2.5,
+      'REF PMOC Nº': 'PMOC-2026-CAG-001',
+      equipamentoVinculado: 'Chiller Centrífugo York YK-500TR',
+      turno: 'Turno 1 - Manhã',
+      processoOuConforto: 'PROCESSO'
+    },
+    {
+      'Plano manut.': 'PLN-PMOC-002',
+      GrpLisTar: 'PMOC-DC-01',
+      'Texto item man.': 'Revisão Mensal Filtros e Correias AHU-01 DataCenter',
+      COD: 'MP-MEN-02',
+      'Loc.instalação': 'NEXUS-DC-SP/AHU-PRECISAO-01',
+      'CenTrab respon.': 'HVAC-PRECISAO',
+      'Tipo de ordem': 'PM02',
+      Frequencia: '1M',
+      Tempo: 4.0,
+      'REF PMOC Nº': 'PMOC-2026-DC-002',
+      equipamentoVinculado: 'Fan Coil Precisão Stulz CyberAir 3',
+      turno: 'Turno Central - Comercial',
+      processoOuConforto: 'PROCESSO'
+    },
+    {
+      'Plano manut.': 'PLN-PMOC-003',
+      GrpLisTar: 'PMOC-CAG-02',
+      'Texto item man.': 'Análise Termográfica e Reaperto Elétrico Chiller York YK',
+      COD: 'MP-TRI-01',
+      'Loc.instalação': 'CAG-TAMBORE-SP/CHILLER-01',
+      'CenTrab respon.': 'ELETR-PREDITIVA',
+      'Tipo de ordem': 'PM02',
+      Frequencia: '3M',
+      Tempo: 3.5,
+      'REF PMOC Nº': 'PMOC-2026-CAG-003',
+      equipamentoVinculado: 'Chiller Centrífugo York YK-500TR',
+      turno: 'Turno 1 - Manhã',
+      processoOuConforto: 'PROCESSO'
+    },
+    {
+      'Plano manut.': 'PLN-PMOC-004',
+      GrpLisTar: 'PMOC-FRIG-01',
+      'Texto item man.': 'Checagem de Estanqueidade e Válvulas de Alívio Amônia NH3',
+      COD: 'MP-SEM-02',
+      'Loc.instalação': 'FRIG-BOI-DOURADO-GO/SALA-NH3-01',
+      'CenTrab respon.': 'MEC-REF-PESADA',
+      'Tipo de ordem': 'PM02',
+      Frequencia: '1S',
+      Tempo: 3.0,
+      'REF PMOC Nº': 'PMOC-2026-FRIG-001',
+      equipamentoVinculado: 'Compressor Parafuso Sabroe VMY-336 NH3',
+      turno: 'Turno 1 - Manhã',
+      processoOuConforto: 'PROCESSO'
+    },
+    {
+      'Plano manut.': 'PLN-PMOC-005',
+      GrpLisTar: 'PMOC-AUT-01',
+      'Texto item man.': 'Calibração Transmissores de Pressão Danfoss CAG',
+      COD: 'MP-SEM-03',
+      'Loc.instalação': 'CAG-TAMBORE-SP/PAINEL-AUT-01',
+      'CenTrab respon.': 'AUT-INSTRUM',
+      'Tipo de ordem': 'PM02',
+      Frequencia: '6M',
+      Tempo: 5.0,
+      'REF PMOC Nº': 'PMOC-2026-CAG-005',
+      equipamentoVinculado: 'Painel Central Automação Carel pCO5+',
+      turno: 'Turno Central - Comercial',
+      processoOuConforto: 'PROCESSO'
+    },
+    {
+      'Plano manut.': 'PLN-PMOC-006',
+      GrpLisTar: 'PMOC-TORRE-01',
+      'Texto item man.': 'Limpeza Química Torre de Resfriamento BAC-01',
+      COD: 'MP-MEN-03',
+      'Loc.instalação': 'CAG-TAMBORE-SP/TORRE-01',
+      'CenTrab respon.': 'MEC-GERAL',
+      'Tipo de ordem': 'PM02',
+      Frequencia: '1M',
+      Tempo: 6.0,
+      'REF PMOC Nº': 'PMOC-2026-CAG-006',
+      equipamentoVinculado: 'Torre de Resfriamento BAC VXT-150',
+      turno: 'Turno 2 - Tarde',
+      processoOuConforto: 'PROCESSO'
+    },
+    {
+      'Plano manut.': 'PLN-PMOC-008',
+      GrpLisTar: 'PMOC-FRIG-02',
+      'Texto item man.': 'Inspeção Semanal Condensador Evaporativo Evapco',
+      COD: 'MP-SEM-04',
+      'Loc.instalação': 'FRIG-BOI-DOURADO-GO/COND-EVAP-01',
+      'CenTrab respon.': 'MEC-REF-PESADA',
+      'Tipo de ordem': 'PM02',
+      Frequencia: '1S',
+      Tempo: 2.0,
+      'REF PMOC Nº': 'PMOC-2026-FRIG-002',
+      equipamentoVinculado: 'Condensador Evaporativo Evapco ATC-M',
+      turno: 'Turno 1 - Manhã',
+      processoOuConforto: 'PROCESSO'
+    },
+    {
+      'Plano manut.': 'PLN-PMOC-009',
+      GrpLisTar: 'PMOC-FRIG-03',
+      'Texto item man.': 'Revisão Anual Cabeçote e Válvulas Compressor Sabroe NH3',
+      COD: 'MP-ANU-01',
+      'Loc.instalação': 'FRIG-BOI-DOURADO-GO/SALA-NH3-02',
+      'CenTrab respon.': 'MEC-REF-PESADA',
+      'Tipo de ordem': 'PM02',
+      Frequencia: '1A',
+      Tempo: 12.0,
+      'REF PMOC Nº': 'PMOC-2026-FRIG-003',
+      equipamentoVinculado: 'Compressor Recíproco Mycom N8WA NH3',
+      turno: 'Turno 1 - Manhã',
+      processoOuConforto: 'PROCESSO'
+    },
+    {
+      'Plano manut.': 'PLN-PMOC-010',
+      GrpLisTar: 'PMOC-HOSP-01',
+      'Texto item man.': 'Higienização de Serpentinas e Bandejas Fan Coils Escritório',
+      COD: 'MP-MEN-04',
+      'Loc.instalação': 'HOSP-SAO-LUIZ-SP/BLOCO-CIRURGICO',
+      'CenTrab respon.': 'HVAC-PRECISAO',
+      'Tipo de ordem': 'PM02',
+      Frequencia: '1M',
+      Tempo: 4.0,
+      'REF PMOC Nº': 'PMOC-2026-HOSP-001',
+      equipamentoVinculado: 'Fan Coil Hidrônico Carrier 39HQ',
+      turno: 'Turno 3 - Noturno',
+      processoOuConforto: 'CONFORTO'
+    },
+    {
+      'Plano manut.': 'PLN-PMOC-011',
+      GrpLisTar: 'PMOC-CAG-03',
+      'Texto item man.': 'Alinhamento a Laser e Medição de Vibração BAG-01',
+      COD: 'MP-5S-01',
+      'Loc.instalação': 'CAG-TAMBORE-SP/BOMBA-01',
+      'CenTrab respon.': 'MEC-GERAL',
+      'Tipo de ordem': 'PM02',
+      Frequencia: '5S',
+      Tempo: 3.5,
+      'REF PMOC Nº': 'PMOC-2026-CAG-011',
+      equipamentoVinculado: 'Bomba de Água Gelada KSB Megaflow 65-200',
+      turno: 'Turno 2 - Tarde',
+      processoOuConforto: 'PROCESSO'
+    }
+  ],
+
+  // 7. Tolerância: Matriz de tolerância legal e operacional (+/- dias)
+  Tolerancia: [
+    {
+      TIPO: 'SEMANAL',
+      'TOLERÂNCIA (+/-)': 2,
+      TP: 'S',
+      CICLO: '1S'
+    },
+    {
+      TIPO: 'QUINZENAL / 5 SEMANAS',
+      'TOLERÂNCIA (+/-)': 4,
+      TP: 'S',
+      CICLO: '5S'
+    },
+    {
+      TIPO: 'MENSAL',
+      'TOLERÂNCIA (+/-)': 5,
+      TP: 'M',
+      CICLO: '1M'
+    },
+    {
+      TIPO: 'TRIMESTRAL / 13 SEMANAS',
+      'TOLERÂNCIA (+/-)': 8,
+      TP: 'S',
+      CICLO: '13S'
+    },
+    {
+      TIPO: 'SEMESTRAL / 26 SEMANAS',
+      'TOLERÂNCIA (+/-)': 15,
+      TP: 'S',
+      CICLO: '26S'
+    },
+    {
+      TIPO: 'ANUAL / 12 MESES',
+      'TOLERÂNCIA (+/-)': 30,
+      TP: 'A',
+      CICLO: '1A'
+    },
+    {
+      TIPO: 'ANUAL 12M',
+      'TOLERÂNCIA (+/-)': 30,
+      TP: 'M',
+      CICLO: '12M'
+    }
+  ],
+
+  // 8. Turnos: Distribuição de responsabilidade por turno de manutenção
+  Turnos: [
+    {
+      PLANO: 'PLN-PMOC-001',
+      'TURNO RESPONSAVEL': 'Turno 1 - Manhã',
+      descricaoEquipe: 'Refrigeração Pesada (07:00 - 15:20)'
+    },
+    {
+      PLANO: 'PLN-PMOC-002',
+      'TURNO RESPONSAVEL': 'Turno Central - Comercial',
+      descricaoEquipe: 'HVAC Precisão DataCenter (08:00 - 17:48)'
+    },
+    {
+      PLANO: 'PLN-PMOC-003',
+      'TURNO RESPONSAVEL': 'Turno 1 - Manhã',
+      descricaoEquipe: 'Preditiva Elétrica (07:00 - 15:20)'
+    },
+    {
+      PLANO: 'PLN-PMOC-004',
+      'TURNO RESPONSAVEL': 'Turno 1 - Manhã',
+      descricaoEquipe: 'Refrigeração Pesada NH3 (07:00 - 15:20)'
+    },
+    {
+      PLANO: 'PLN-PMOC-005',
+      'TURNO RESPONSAVEL': 'Turno Central - Comercial',
+      descricaoEquipe: 'Automação & Instrumentação (08:00 - 17:48)'
+    },
+    {
+      PLANO: 'PLN-PMOC-006',
+      'TURNO RESPONSAVEL': 'Turno 2 - Tarde',
+      descricaoEquipe: 'Mecânica Geral & Torres (15:00 - 23:20)'
+    },
+    {
+      PLANO: 'PLN-PMOC-008',
+      'TURNO RESPONSAVEL': 'Turno 1 - Manhã',
+      descricaoEquipe: 'Refrigeração Pesada NH3 (07:00 - 15:20)'
+    },
+    {
+      PLANO: 'PLN-PMOC-009',
+      'TURNO RESPONSAVEL': 'Turno 1 - Manhã',
+      descricaoEquipe: 'Refrigeração Pesada NH3 (07:00 - 15:20)'
+    },
+    {
+      PLANO: 'PLN-PMOC-010',
+      'TURNO RESPONSAVEL': 'Turno 3 - Noturno',
+      descricaoEquipe: 'HVAC Hospitalar Noturno (22:00 - 06:20)'
+    },
+    {
+      PLANO: 'PLN-PMOC-011',
+      'TURNO RESPONSAVEL': 'Turno 2 - Tarde',
+      descricaoEquipe: 'Mecânica Geral Bombas (15:00 - 23:20)'
+    }
+  ],
+
+  // 9. PMOC BASE: Cadastro mestre de PMOC com distinção Processo vs Conforto
+  PmocBase: [
+    {
+      'REF. PLANO': 'PLN-PMOC-001',
+      'REF. PMOC': 'PMOC-2026-CAG-001',
+      'PROCESSO ou CONFORTO': 'PROCESSO',
+      'EQUIPE RESP.': 'Refrigeração Pesada',
+      TIPO: 'Chiller Centrífugo',
+      'DESCRIÇÃO SAP': 'CHILLER YORK YK 500TR R-134a CAG CENTRAL',
+      'DESCRIÇÃO DO EQUIPAMENTO': 'Chiller York YK Water-Cooled 500 TR c/ Painel OptiView',
+      'REF. PMOC2': 'ART-SP-2026-99412',
+      FREQUÊNCIA: '1S',
+      'LOCAL DE INSTALAÇÃO': 'CAG-TAMBORE-SP'
+    },
+    {
+      'REF. PLANO': 'PLN-PMOC-002',
+      'REF. PMOC': 'PMOC-2026-DC-002',
+      'PROCESSO ou CONFORTO': 'PROCESSO',
+      'EQUIPE RESP.': 'HVAC Conforto & Precisão',
+      TIPO: 'Fan Coil Precisão',
+      'DESCRIÇÃO SAP': 'AHU STULZ CYBERAIR 3 DC SALA BRANCA',
+      'DESCRIÇÃO DO EQUIPAMENTO': 'Unidade de Precisão Stulz CyberAir 3 DX R-410A Downflow',
+      'REF. PMOC2': 'ART-SP-2026-99415',
+      FREQUÊNCIA: '1M',
+      'LOCAL DE INSTALAÇÃO': 'NEXUS-DC-SP'
+    },
+    {
+      'REF. PLANO': 'PLN-PMOC-003',
+      'REF. PMOC': 'PMOC-2026-CAG-003',
+      'PROCESSO ou CONFORTO': 'PROCESSO',
+      'EQUIPE RESP.': 'Refrigeração Pesada',
+      TIPO: 'Chiller Centrífugo',
+      'DESCRIÇÃO SAP': 'CHILLER YORK YK - PAINEL ELETRICO',
+      'DESCRIÇÃO DO EQUIPAMENTO': 'Painel de Comando e Inversor de Frequência York VSD',
+      'REF. PMOC2': 'ART-SP-2026-99412',
+      FREQUÊNCIA: '3M',
+      'LOCAL DE INSTALAÇÃO': 'CAG-TAMBORE-SP'
+    },
+    {
+      'REF. PLANO': 'PLN-PMOC-004',
+      'REF. PMOC': 'PMOC-2026-FRIG-001',
+      'PROCESSO ou CONFORTO': 'PROCESSO',
+      'EQUIPE RESP.': 'Refrigeração Pesada',
+      TIPO: 'Compressor Amônia',
+      'DESCRIÇÃO SAP': 'COMPRESSOR PARAFUSO SABROE VMY-336 NH3',
+      'DESCRIÇÃO DO EQUIPAMENTO': 'Compressor Parafuso Industrial Sabroe VMY 336 c/ Economizer',
+      'REF. PMOC2': 'ART-GO-2026-88123',
+      FREQUÊNCIA: '1S',
+      'LOCAL DE INSTALAÇÃO': 'FRIG-BOI-DOURADO-GO'
+    },
+    {
+      'REF. PLANO': 'PLN-PMOC-005',
+      'REF. PMOC': 'PMOC-2026-CAG-005',
+      'PROCESSO ou CONFORTO': 'PROCESSO',
+      'EQUIPE RESP.': 'Automação & Instrumentação',
+      TIPO: 'Automação Supervisório',
+      'DESCRIÇÃO SAP': 'PAINEL CENTRAL AUTOMAÇÃO CAREL CAG',
+      'DESCRIÇÃO DO EQUIPAMENTO': 'Controlador Lógico Programável Carel pCO5+ com Transmissores',
+      'REF. PMOC2': 'ART-SP-2026-99418',
+      FREQUÊNCIA: '6M',
+      'LOCAL DE INSTALAÇÃO': 'CAG-TAMBORE-SP'
+    },
+    {
+      'REF. PLANO': 'PLN-PMOC-006',
+      'REF. PMOC': 'PMOC-2026-CAG-006',
+      'PROCESSO ou CONFORTO': 'PROCESSO',
+      'EQUIPE RESP.': 'Mecânica Geral',
+      TIPO: 'Torre de Resfriamento',
+      'DESCRIÇÃO SAP': 'TORRE DE RESFRIAMENTO BAC VXT 150',
+      'DESCRIÇÃO DO EQUIPAMENTO': 'Torre Evaporativa Baltimore Aircoil VXT-150 c/ Hélice Axial',
+      'REF. PMOC2': 'ART-SP-2026-99412',
+      FREQUÊNCIA: '1M',
+      'LOCAL DE INSTALAÇÃO': 'CAG-TAMBORE-SP'
+    },
+    {
+      'REF. PLANO': 'PLN-PMOC-008',
+      'REF. PMOC': 'PMOC-2026-FRIG-002',
+      'PROCESSO ou CONFORTO': 'PROCESSO',
+      'EQUIPE RESP.': 'Refrigeração Pesada',
+      TIPO: 'Condensador Evaporativo',
+      'DESCRIÇÃO SAP': 'CONDENSADOR EVAPORATIVO EVAPCO ATC-M',
+      'DESCRIÇÃO DO EQUIPAMENTO': 'Condensador Evaporativo Evapco ATC-M Circuito Fechado NH3',
+      'REF. PMOC2': 'ART-GO-2026-88123',
+      FREQUÊNCIA: '1S',
+      'LOCAL DE INSTALAÇÃO': 'FRIG-BOI-DOURADO-GO'
+    },
+    {
+      'REF. PLANO': 'PLN-PMOC-009',
+      'REF. PMOC': 'PMOC-2026-FRIG-003',
+      'PROCESSO ou CONFORTO': 'PROCESSO',
+      'EQUIPE RESP.': 'Refrigeração Pesada',
+      TIPO: 'Compressor Amônia',
+      'DESCRIÇÃO SAP': 'COMPRESSOR PISTAO MYCOM N8WA NH3',
+      'DESCRIÇÃO DO EQUIPAMENTO': 'Compressor Alternativo Mycom 8 Cilindros para Túnel de Congelamento',
+      'REF. PMOC2': 'ART-GO-2026-88123',
+      FREQUÊNCIA: '1A',
+      'LOCAL DE INSTALAÇÃO': 'FRIG-BOI-DOURADO-GO'
+    },
+    {
+      'REF. PLANO': 'PLN-PMOC-010',
+      'REF. PMOC': 'PMOC-2026-HOSP-001',
+      'PROCESSO ou CONFORTO': 'CONFORTO',
+      'EQUIPE RESP.': 'HVAC Conforto & Precisão',
+      TIPO: 'Fan Coil Hospitalar',
+      'DESCRIÇÃO SAP': 'FAN COIL CARRIER 39HQ BLOCO CIRURGICO',
+      'DESCRIÇÃO DO EQUIPAMENTO': 'Fan Coil Carrier Série 39HQ c/ Filtragem Absoluta HEPA H14',
+      'REF. PMOC2': 'ART-SP-2026-77341',
+      FREQUÊNCIA: '1M',
+      'LOCAL DE INSTALAÇÃO': 'HOSP-SAO-LUIZ-SP'
+    },
+    {
+      'REF. PLANO': 'PLN-PMOC-011',
+      'REF. PMOC': 'PMOC-2026-CAG-011',
+      'PROCESSO ou CONFORTO': 'PROCESSO',
+      'EQUIPE RESP.': 'Mecânica Geral',
+      TIPO: 'Bomba Centrífuga',
+      'DESCRIÇÃO SAP': 'BOMBA AGUA GELADA KSB MEGAFLOW 65-200',
+      'DESCRIÇÃO DO EQUIPAMENTO': 'Bomba Centrífuga Back-Pull-Out KSB Megaflow 65-200 c/ Motor WEG W22',
+      'REF. PMOC2': 'ART-SP-2026-99412',
+      FREQUÊNCIA: '5S',
+      'LOCAL DE INSTALAÇÃO': 'CAG-TAMBORE-SP'
+    }
+  ],
+
+  // 10. Local: Locais de instalação, unidades e plantas
+  Local: [
+    {
+      Código: 'CAG-TAMBORE-SP',
+      'Unidade / Local': 'Central de Água Gelada — Complexo Tamboré / Barueri SP',
+      area: 'Planta de Utilidades Industriais & Chillers',
+      cidadeUf: 'Barueri / SP'
+    },
+    {
+      Código: 'FRIG-BOI-DOURADO-GO',
+      'Unidade / Local': 'Frigorífico Boi Dourado — Planta Industrial Goiânia GO',
+      area: 'Túneis de Congelamento & Salas de Máquinas NH3',
+      cidadeUf: 'Goiânia / GO'
+    },
+    {
+      Código: 'NEXUS-DC-SP',
+      'Unidade / Local': 'Nexus DataCenter Tier III — São Paulo SP',
+      area: 'Salas Brancas, Racks de Alta Densidade & Free Cooling',
+      cidadeUf: 'São Paulo / SP'
+    },
+    {
+      Código: 'HOSP-SAO-LUIZ-SP',
+      'Unidade / Local': 'Hospital São Luiz — Unidade Morumbi SP',
+      area: 'Blocos Cirúrgicos, UTIs & Isolamento de Pressão Negativa',
+      cidadeUf: 'São Paulo / SP'
+    },
+    {
+      Código: 'CD-LOG-CAMPINAS-SP',
+      'Unidade / Local': 'Centro de Distribuição Refrigerada — Campinas SP',
+      area: 'Câmaras Frias de Resfriados e Congelados',
+      cidadeUf: 'Campinas / SP'
+    }
+  ],
+
+  // 11. EXCLUSÃO: Planos/equipamentos excluídos da programação automática com justificativa técnica
+  EXCLUSÃO: [
+    {
+      PLANO: 'PLN-EXC-091',
+      DESCRIÇÃO: 'Chiller Trane RTAC-140 (Unidade Reserva 03)',
+      'LOCAL INSTALAÇÃO': 'CAG-TAMBORE-SP',
+      MOTIVO: 'Ativo em reforma programada e retrofit de refrigerante para R-449A (Previsão de retorno: Nov/2026)',
+      dataExclusao: '2026-06-15'
+    },
+    {
+      PLANO: 'PLN-EXC-092',
+      DESCRIÇÃO: 'Compressor Mycom 6WA Antigo (Desativado)',
+      'LOCAL INSTALAÇÃO': 'FRIG-BOI-DOURADO-GO',
+      MOTIVO: 'Substituído por modelo Parafuso VMY-336 em modernização de eficiência energética',
+      dataExclusao: '2026-04-10'
+    },
+    {
+      PLANO: 'PLN-EXC-093',
+      DESCRIÇÃO: 'AHU-04 Sala Anexa Prédio C',
+      'LOCAL INSTALAÇÃO': 'NEXUS-DC-SP',
+      MOTIVO: 'Área desocupada para obras civis de ampliação de capacidade elétrica',
+      dataExclusao: '2026-07-01'
+    },
+    {
+      PLANO: 'PLN-EXC-094',
+      DESCRIÇÃO: 'Torre de Resfriamento Alfaterm 03',
+      'LOCAL INSTALAÇÃO': 'CAG-TAMBORE-SP',
+      MOTIVO: 'Equipamento em hibernação durante o período de inverno (baixo carregamento térmico)',
+      dataExclusao: '2026-05-20'
+    }
+  ],
+
+  // 12. Planilha8: Referências de periodicidade e semanas para programação
+  Planilha8: [
+    {
+      periodicidade: '1S',
+      diasCiclo: 7,
+      referenciaSemanas: ['S01', 'S02', 'S03', 'S04', 'S05', 'S06', 'S07', 'S08', 'S09', 'S10', 'S11', 'S12', 'S13', 'S14', 'S15', 'S16', 'S17', 'S18', 'S19', 'S20', 'S21', 'S22', 'S23', 'S24', 'S25', 'S26', 'S27', 'S28', 'S29', 'S30', 'S31', 'S32', 'S33', 'S34', 'S35', 'S36', 'S37', 'S38', 'S39', 'S40', 'S41', 'S42', 'S43', 'S44', 'S45', 'S46', 'S47', 'S48', 'S49', 'S50', 'S51', 'S52'],
+      referenciaDatas: ['2026-01-05', '2026-01-12', '2026-01-19', '2026-01-26', '2026-09-03', '2026-09-10']
+    },
+    {
+      periodicidade: '5S',
+      diasCiclo: 35,
+      referenciaSemanas: ['S05', 'S10', 'S15', 'S20', 'S25', 'S30', 'S35', 'S40', 'S45', 'S50'],
+      referenciaDatas: ['2026-02-02', '2026-03-09', '2026-04-13', '2026-05-18', '2026-06-22', '2026-07-27', '2026-08-31', '2026-10-05']
+    },
+    {
+      periodicidade: '13S',
+      diasCiclo: 91,
+      referenciaSemanas: ['S13', 'S26', 'S39', 'S52'],
+      referenciaDatas: ['2026-03-30', '2026-06-29', '2026-09-28', '2026-12-28']
+    },
+    {
+      periodicidade: '26S',
+      diasCiclo: 182,
+      referenciaSemanas: ['S26', 'S52'],
+      referenciaDatas: ['2026-06-29', '2026-12-28']
+    },
+    {
+      periodicidade: '1A',
+      diasCiclo: 365,
+      referenciaSemanas: ['S38'],
+      referenciaDatas: ['2026-09-22']
+    }
+  ]
+};
+
+// Write root JSON file
+fs.writeFileSync(path.join(process.cwd(), 'MFV_dados_base_google_ai_studio.json'), JSON.stringify(MFV_BASE, null, 2), 'utf-8');
+
+// Write also to src/data for direct client/server import
+const dataDir = path.join(process.cwd(), 'src', 'data');
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
+fs.writeFileSync(path.join(dataDir, 'MFV_dados_base_google_ai_studio.json'), JSON.stringify(MFV_BASE, null, 2), 'utf-8');
+
+console.log('Successfully generated MFV_dados_base_google_ai_studio.json with all 12 sheets!');

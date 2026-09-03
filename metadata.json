@@ -1,0 +1,11 @@
+{
+  "name": "MFV — Manutenção Field Vision",
+  "description": "Plataforma profissional de PCM, manutenção industrial e refrigeração para gestão de chamados, técnicos, ativos, preventivas e execução em campo com IA.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
