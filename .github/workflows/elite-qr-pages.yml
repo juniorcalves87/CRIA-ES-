@@ -1,7 +1,7 @@
 name: Deploy ELITE QR to GitHub Pages
 on:
   push:
-    branches: ["elite-qr-mvp"]
+    branches: ["main"]
   workflow_dispatch:
 permissions:
   contents: read
