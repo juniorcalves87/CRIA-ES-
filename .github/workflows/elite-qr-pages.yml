@@ -22,6 +22,8 @@ jobs:
         run: |
           mkdir -p _site
           cp elite-qr/index.html _site/index.html
+          cp elite-qr/supabase-integration.js _site/supabase-integration.js
+          printf '%s\n' '<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./supabase-integration.js"></script>' >> _site/index.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
