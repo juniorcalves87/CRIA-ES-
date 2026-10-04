@@ -23,7 +23,14 @@ jobs:
           mkdir -p _site
           cp elite-qr/index.html _site/index.html
           cp elite-qr/supabase-integration.js _site/supabase-integration.js
-          printf '%s\n' '<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./supabase-integration.js"></script>' >> _site/index.html
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("_site/index.html")
+          s=p.read_text(encoding="utf-8")
+          inject='<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./supabase-integration.js"></script>'
+          s=s.replace("</body>", inject+"</body>")
+          p.write_text(s,encoding="utf-8")
+          PY
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
