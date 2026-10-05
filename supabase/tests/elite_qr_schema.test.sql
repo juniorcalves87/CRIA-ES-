@@ -1,9 +1,6 @@
 -- ELITE QR schema smoke tests.
--- Run with: supabase test db
 begin;
-
 select plan(18);
-
 select has_table('public','companies','companies exists');
 select has_table('public','profiles','profiles exists');
 select has_table('public','user_roles','user_roles exists');
@@ -20,13 +17,7 @@ select has_function('public','current_company_id','current_company_id exists');
 select has_function('public','my_company','my_company exists');
 select has_function('public','public_asset_by_qr','public QR function exists');
 select has_function('public','create_company_invite','invite function exists');
-select has_index('public','assets','uq_assets_company_tag','asset uniqueness index exists');
-
-select is(
-  (select relrowsecurity from pg_class where oid='public.attachments'::regclass),
-  true,
-  'attachments has RLS enabled'
-);
-
+select has_index('public','assets','assets_company_id_tag_key','asset uniqueness index exists');
+select is((select relrowsecurity from pg_class where oid='public.attachments'::regclass),true,'attachments has RLS enabled');
 select * from finish();
 rollback;
