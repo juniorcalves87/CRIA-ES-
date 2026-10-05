@@ -1,0 +1,10 @@
+{
+  "name":"ELITE QR — Gestão de Manutenção",
+  "short_name":"ELITE QR",
+  "lang":"pt-BR",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#090d18",
+  "theme_color":"#111827",
+  "description":"Gestão inteligente de manutenção industrial com QR Code."
+}
