@@ -18,17 +18,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Validate static app
+        run: |
+          test -s elite-qr/index.html
+          test -s elite-qr/supabase-integration.js
+          test -s elite-qr/manifest.webmanifest
+          test -s elite-qr/sw.js
       - name: Prepare site
         run: |
+          rm -rf _site
           mkdir -p _site
           cp elite-qr/index.html _site/index.html
           cp elite-qr/supabase-integration.js _site/supabase-integration.js
+          cp elite-qr/manifest.webmanifest _site/manifest.webmanifest
+          cp elite-qr/sw.js _site/sw.js
           python - <<'PY'
           from pathlib import Path
           p=Path("_site/index.html")
           s=p.read_text(encoding="utf-8")
-          inject='<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./supabase-integration.js"></script>'
-          s=s.replace("</body>", inject+"</body>")
+          head='<link rel="manifest" href="./manifest.webmanifest"><meta name="mobile-web-app-capable" content="yes">'
+          inject='<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./supabase-integration.js"></script><script>if("serviceWorker" in navigator){navigator.serviceWorker.register("./sw.js").catch(()=>{})}</script>'
+          s=s.replace("</head>",head+"</head>")
+          s=s.replace("</body>",inject+"</body>")
           p.write_text(s,encoding="utf-8")
           PY
       - uses: actions/configure-pages@v5
