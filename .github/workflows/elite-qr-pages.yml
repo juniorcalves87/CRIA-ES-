@@ -24,6 +24,16 @@ jobs:
           test -s elite-qr/supabase-integration.js
           test -s elite-qr/manifest.webmanifest
           test -s elite-qr/sw.js
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          s=Path("elite-qr/index.html").read_text(encoding="utf-8")
+          scripts=re.findall(r"<script(?![^>]*\\bsrc=)[^>]*>(.*?)</script>",s,re.S)
+          Path("/tmp/elite-inline.js").write_text("\n".join(scripts),encoding="utf-8")
+          PY
+          node --check /tmp/elite-inline.js
+          node --check elite-qr/supabase-integration.js
+          node --check elite-qr/sw.js
       - name: Prepare site
         run: |
           rm -rf _site
