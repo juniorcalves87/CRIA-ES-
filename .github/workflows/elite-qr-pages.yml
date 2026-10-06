@@ -24,6 +24,16 @@ jobs:
           test -s elite-qr/supabase-integration.js
           test -s elite-qr/manifest.webmanifest
           test -s elite-qr/sw.js
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          html=Path('elite-qr/index.html').read_text(encoding='utf-8')
+          blocks=[]
+          for m in re.finditer(r'<script([^>]*)>(.*?)</script>', html, re.I|re.S):
+              if 'src=' not in m.group(1).lower(): blocks.append(m.group(2))
+          Path('/tmp/elite-inline.js').write_text('\n'.join(blocks),encoding='utf-8')
+          PY
+          node --check /tmp/elite-inline.js
       - name: Prepare site
         run: |
           rm -rf _site
