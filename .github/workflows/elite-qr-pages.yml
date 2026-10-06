@@ -25,6 +25,7 @@ jobs:
           test -s elite-qr/manifest.webmanifest
           test -s elite-qr/sw.js
           test -s elite-qr/saas-commercial.js
+          test -s elite-qr/saas3-admin.js
           python - <<'PY'
           from pathlib import Path
           import re
@@ -44,6 +45,7 @@ jobs:
           cp elite-qr/manifest.webmanifest _site/manifest.webmanifest
           cp elite-qr/sw.js _site/sw.js
           cp elite-qr/saas-commercial.js _site/saas-commercial.js
+          cp elite-qr/saas3-admin.js _site/saas3-admin.js
           python - <<'PY'
           from pathlib import Path
           p=Path("_site/index.html")
