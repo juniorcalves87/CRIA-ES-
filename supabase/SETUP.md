@@ -37,3 +37,7 @@ The QR URL can resolve an equipment through the `public_asset_by_qr` RPC without
 
 ## Deployment
 The frontend is deployed by GitHub Actions to GitHub Pages.
+
+
+## 006 — SaaS comercial
+Após as migrations 001–005, execute `006_commercial_saas.sql`. Ela cria catálogo de planos Start/Pro/Industrial, assinatura por empresa, entitlements/limites, medição de uso e preparação para provedor de cobrança. O navegador nunca recebe chaves secretas. A integração de checkout/webhook deve ser feita por backend/Edge Function.
