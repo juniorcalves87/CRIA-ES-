@@ -50,3 +50,8 @@ Execute `007_saas2_pix_master.sql` após 006.
 - Upgrades geram uma solicitação de plano e exibem a chave PIX cadastrada.
 - O e-mail proprietário/mestre reservado é **juniorcalves87@gmail.com**.
 - A senha nunca é criada nem armazenada pelo projeto; o acesso usa o Supabase Auth. Faça o primeiro cadastro/reset desse e-mail no Supabase para definir a senha.
+
+## 008 — SaaS 3: administração mestre e onboarding
+Execute `008_saas3_master_onboarding.sql` após 007. Ela adiciona painel mestre, aprovação/rejeição de pagamentos PIX, alteração manual de plano, gestão resumida de clientes, onboarding da empresa e recuperação de senha via Supabase Auth.
+
+**Administrador mestre:** `juniorcalves87@gmail.com`. O banco reconhece esse e-mail para as funções mestre; a senha permanece exclusivamente no Supabase Auth.
