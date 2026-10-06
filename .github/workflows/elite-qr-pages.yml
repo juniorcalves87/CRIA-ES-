@@ -18,18 +18,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate required files
+      - name: Validate required files and JavaScript
         run: |
           set -euo pipefail
-          test -s elite-qr/index.html
-          test -s elite-qr/supabase-integration.js
-          test -s elite-qr/manifest.webmanifest
-          test -s elite-qr/sw.js
-          test -s elite-qr/saas-commercial.js
-          test -s elite-qr/saas3-admin.js
+          for f in elite-qr/index.html elite-qr/supabase-integration.js elite-qr/manifest.webmanifest elite-qr/sw.js elite-qr/saas-commercial.js elite-qr/saas3-admin.js elite-qr/runtime-fix.js; do test -s "$f"; done
           node --check elite-qr/supabase-integration.js
           node --check elite-qr/saas-commercial.js
           node --check elite-qr/saas3-admin.js
+          node --check elite-qr/runtime-fix.js
           python - <<'PY'
           from pathlib import Path
           import re
@@ -52,6 +48,7 @@ jobs:
           cp elite-qr/sw.js _site/sw.js
           cp elite-qr/saas-commercial.js _site/saas-commercial.js
           cp elite-qr/saas3-admin.js _site/saas3-admin.js
+          cp elite-qr/runtime-fix.js _site/runtime-fix.js
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
