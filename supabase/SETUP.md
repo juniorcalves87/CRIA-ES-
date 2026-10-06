@@ -41,3 +41,12 @@ The frontend is deployed by GitHub Actions to GitHub Pages.
 
 ## 006 — SaaS comercial
 Após as migrations 001–005, execute `006_commercial_saas.sql`. Ela cria catálogo de planos Start/Pro/Industrial, assinatura por empresa, entitlements/limites, medição de uso e preparação para provedor de cobrança. O navegador nunca recebe chaves secretas. A integração de checkout/webhook deve ser feita por backend/Edge Function.
+
+## 007 — SaaS 2: PIX manual + proprietário mestre
+Execute `007_saas2_pix_master.sql` após 006.
+
+- A chave PIX é cadastrada manualmente pelo botão **⚙ PIX** dentro do sistema.
+- A chave não é gravada no código-fonte nem no GitHub.
+- Upgrades geram uma solicitação de plano e exibem a chave PIX cadastrada.
+- O e-mail proprietário/mestre reservado é **juniorcalves87@gmail.com**.
+- A senha nunca é criada nem armazenada pelo projeto; o acesso usa o Supabase Auth. Faça o primeiro cadastro/reset desse e-mail no Supabase para definir a senha.
