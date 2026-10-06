@@ -67,6 +67,11 @@ create policy "plans public read" on public.saas_plans for select using (active=
 create policy "subscription company read" on public.company_subscriptions for select using (company_id=public.current_company_id());
 create policy "billing manager read" on public.billing_events for select using (company_id=public.current_company_id() and public.is_manager());
 
+insert into public.company_subscriptions(company_id,plan_id,status,trial_ends_at,current_period_start,current_period_end)
+select c.id,p.id,'trialing',now()+interval '14 days',now(),now()+interval '14 days'
+from public.companies c cross join lateral (select id from public.saas_plans where code='START' limit 1) p
+where not exists(select 1 from public.company_subscriptions s where s.company_id=c.id);
+
 create or replace function public.ensure_company_subscription(p_company_id uuid)
 returns void language plpgsql security definer set search_path=public
 as $$
