@@ -24,6 +24,7 @@ jobs:
           test -s elite-qr/supabase-integration.js
           test -s elite-qr/manifest.webmanifest
           test -s elite-qr/sw.js
+          test -s elite-qr/saas-commercial.js
           python - <<'PY'
           from pathlib import Path
           import re
@@ -42,12 +43,13 @@ jobs:
           cp elite-qr/supabase-integration.js _site/supabase-integration.js
           cp elite-qr/manifest.webmanifest _site/manifest.webmanifest
           cp elite-qr/sw.js _site/sw.js
+          cp elite-qr/saas-commercial.js _site/saas-commercial.js
           python - <<'PY'
           from pathlib import Path
           p=Path("_site/index.html")
           s=p.read_text(encoding="utf-8")
           head='<link rel="manifest" href="./manifest.webmanifest"><meta name="mobile-web-app-capable" content="yes">'
-          inject='<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./supabase-integration.js"></script><script>if("serviceWorker" in navigator){navigator.serviceWorker.register("./sw.js").catch(()=>{})}</script>'
+          inject='<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./supabase-integration.js"></script><script src="./saas-commercial.js"></script><script>if("serviceWorker" in navigator){navigator.serviceWorker.register("./sw.js").catch(()=>{})}</script>'
           s=s.replace("</head>",head+"</head>")
           s=s.replace("</body>",inject+"</body>")
           p.write_text(s,encoding="utf-8")
