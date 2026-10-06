@@ -55,3 +55,12 @@ Execute `007_saas2_pix_master.sql` após 006.
 Execute `008_saas3_master_onboarding.sql` após 007. Ela adiciona painel mestre, aprovação/rejeição de pagamentos PIX, alteração manual de plano, gestão resumida de clientes, onboarding da empresa e recuperação de senha via Supabase Auth.
 
 **Administrador mestre:** `juniorcalves87@gmail.com`. O banco reconhece esse e-mail para as funções mestre; a senha permanece exclusivamente no Supabase Auth.
+
+
+## 009 — Nova hospedagem Cloudflare
+
+A hospedagem recomendada do ELITE QR passa a ser Cloudflare Pages, mantendo GitHub como fonte do código e Supabase como banco/Auth/Storage. O frontend está em `elite-qr/` e inclui `_headers`, `_redirects` e `wrangler.toml` para a camada Cloudflare.
+
+Para publicação gratuita, conecte o repositório ao Cloudflare Pages com branch `main`, sem build command e output directory `elite-qr`. O projeto receberá um endereço `pages.dev`. Depois, um domínio `.com.br` pode ser conectado sem alterar o aplicativo.
+
+Também foi preparado `.github/workflows/cloudflare-pages.yml` para publicação automática via GitHub Actions. Esse fluxo exige apenas os secrets `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID`; eles não devem ser gravados no código.

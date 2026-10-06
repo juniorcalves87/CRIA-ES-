@@ -1,0 +1,42 @@
+name: Deploy ELITE QR to Cloudflare Pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate ELITE QR
+        run: |
+          test -s elite-qr/index.html
+          test -s elite-qr/supabase-integration.js
+          test -s elite-qr/saas-commercial.js
+          test -s elite-qr/saas3-admin.js
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          html=Path("elite-qr/index.html").read_text(encoding="utf-8")
+          blocks=[]
+          for m in re.finditer(r'<script([^>]*)>(.*?)</script>', html, re.I|re.S):
+              if 'src=' not in m.group(1).lower():
+                  blocks.append(m.group(2))
+          Path("/tmp/elite-inline.js").write_text("\n".join(blocks),encoding="utf-8")
+          PY
+          node --check /tmp/elite-inline.js
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: elite-qr
+          directory: elite-qr
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
