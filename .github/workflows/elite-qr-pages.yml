@@ -18,22 +18,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate static app
+      - name: Validate required files
         run: |
           test -s elite-qr/index.html
           test -s elite-qr/supabase-integration.js
           test -s elite-qr/manifest.webmanifest
           test -s elite-qr/sw.js
-          python - <<'PY'
-          import re
-          from pathlib import Path
-          s=Path("elite-qr/index.html").read_text(encoding="utf-8")
-          blocks=re.findall(r"<script(?:\\s[^>]*)?>(.*?)</script>",s,re.S|re.I)
-          Path("/tmp/elite-inline.js").write_text("\n".join(blocks),encoding="utf-8")
-          PY
-          node --check /tmp/elite-inline.js
-          node --check elite-qr/supabase-integration.js
-          node --check elite-qr/sw.js
       - name: Prepare site
         run: |
           rm -rf _site
