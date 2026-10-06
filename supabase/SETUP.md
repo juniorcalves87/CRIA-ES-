@@ -8,6 +8,14 @@ Run these files in the Supabase SQL Editor, in order:
 3. `003_stage6_invitations.sql`
 4. `004_stage7_maintenance_audit_qr.sql`
 5. `005_stage7_unique_dimensions.sql`
+6. `006_commercial_saas.sql`
+7. `007_saas2_pix_master.sql`
+8. `008_saas3_master_onboarding.sql`
+9. `009_saas_hardening_import_export.sql`
+10. `010_attachments_hardening.sql`
+11. `011_seller_pix_master.sql`
+12. `012_security_definer_paths.sql`
+13. `013_security_compatibility.sql`
 
 All migrations are idempotent where practical.
 
@@ -38,6 +46,9 @@ The QR URL can resolve an equipment through the `public_asset_by_qr` RPC without
 ## Deployment
 The frontend is deployed by GitHub Actions to GitHub Pages.
 
+
+## 010–013 — Produção e hardening
+As migrations 010–013 adicionam anexos/Storage com RLS, PIX do produto (vendedor), correções do painel mestre e compatibilidade de funções SECURITY DEFINER. Execute-as após 009.
 
 ## 006 — SaaS comercial
 Após as migrations 001–005, execute `006_commercial_saas.sql`. Ela cria catálogo de planos Start/Pro/Industrial, assinatura por empresa, entitlements/limites, medição de uso e preparação para provedor de cobrança. O navegador nunca recebe chaves secretas. A integração de checkout/webhook deve ser feita por backend/Edge Function.
