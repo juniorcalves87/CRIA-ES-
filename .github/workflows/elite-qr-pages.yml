@@ -20,24 +20,30 @@ jobs:
       - uses: actions/checkout@v4
       - name: Validate required files
         run: |
+          set -euo pipefail
           test -s elite-qr/index.html
           test -s elite-qr/supabase-integration.js
           test -s elite-qr/manifest.webmanifest
           test -s elite-qr/sw.js
           test -s elite-qr/saas-commercial.js
           test -s elite-qr/saas3-admin.js
+          node --check elite-qr/supabase-integration.js
+          node --check elite-qr/saas-commercial.js
+          node --check elite-qr/saas3-admin.js
           python - <<'PY'
           from pathlib import Path
           import re
           html=Path('elite-qr/index.html').read_text(encoding='utf-8')
           blocks=[]
           for m in re.finditer(r'<script([^>]*)>(.*?)</script>', html, re.I|re.S):
-              if 'src=' not in m.group(1).lower(): blocks.append(m.group(2))
+              if 'src=' not in m.group(1).lower():
+                  blocks.append(m.group(2))
           Path('/tmp/elite-inline.js').write_text('\n'.join(blocks),encoding='utf-8')
           PY
           node --check /tmp/elite-inline.js
       - name: Prepare site
         run: |
+          set -euo pipefail
           rm -rf _site
           mkdir -p _site
           cp elite-qr/index.html _site/index.html
@@ -46,18 +52,8 @@ jobs:
           cp elite-qr/sw.js _site/sw.js
           cp elite-qr/saas-commercial.js _site/saas-commercial.js
           cp elite-qr/saas3-admin.js _site/saas3-admin.js
-          python - <<'PY'
-          from pathlib import Path
-          p=Path("_site/index.html")
-          s=p.read_text(encoding="utf-8")
-          head='<link rel="manifest" href="./manifest.webmanifest"><meta name="mobile-web-app-capable" content="yes">'
-          inject='<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./supabase-integration.js"></script><script src="./saas-commercial.js"></script><script>if("serviceWorker" in navigator){navigator.serviceWorker.register("./sw.js").catch(()=>{})}</script>'
-          s=s.replace("</head>",head+"</head>")
-          s=s.replace("</body>",inject+"</body>")
-          p.write_text(s,encoding="utf-8")
-          PY
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: _site
       - id: deployment
