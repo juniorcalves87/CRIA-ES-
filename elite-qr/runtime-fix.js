@@ -18,11 +18,30 @@ async function bootDependencies(){
     await loadScript(local+'supabase-integration.js');
     await loadScript(local+'saas-commercial.js');
     await loadScript(local+'saas3-admin.js');
+    patchCommercialPix();
   }catch(e){
     console.warn('[ELITE QR] optional cloud modules:',e);
   }
 }
 
+async function patchCommercialPix(){
+  if(!window.ELITESaaS?.requestPlan)return;
+  const original=window.ELITESaaS.requestPlan;
+  window.ELITESaaS.requestPlan=async function(code){
+    const cfg=JSON.parse(localStorage.getItem('eliteqr_supabase_config_v2')||'null');
+    if(!cfg?.url||!cfg?.key||!window.supabase?.createClient)return window.toast?.('Faça login para solicitar um plano.');
+    const sb=window.supabase.createClient(cfg.url,cfg.key,{auth:{persistSession:true,autoRefreshToken:true}});
+    const session=await sb.auth.getSession();
+    if(!session.data.session)return window.toast?.('Faça login para solicitar um plano.');
+    const p=await sb.from('saas_plans').select('id,name,monthly_price_cents').eq('code',code).single();
+    if(p.error)return window.toast?.('Plano não encontrado.');
+    const seller=await sb.rpc('get_product_pix_settings');
+    const s=seller.data?.[0]||{};
+    const val=(p.data.monthly_price_cents||0)/100;
+    document.getElementById('pixModal')?.remove();
+    document.body.insertAdjacentHTML('beforeend','<div id="pixModal" class="fixed inset-0 z-[150] bg-black/90 p-4 flex items-center justify-center"><div class="max-w-lg w-full bg-[#111827] border border-emerald-500/30 rounded-2xl p-6"><div class="text-xs text-emerald-300 font-bold">PAGAMENTO MANUAL / PIX</div><h2 class="text-2xl font-black mt-2">Upgrade para '+escSafe(p.data.name)+'</h2><div class="mt-5 bg-slate-900 rounded-xl p-4"><div class="text-xs text-slate-400">Valor mensal</div><div class="text-3xl font-black">R$ '+val.toFixed(2).replace('.',',')+'</div><div class="text-xs text-slate-400 mt-4">Chave PIX para pagamento</div><div class="font-mono text-emerald-300 break-all mt-1">'+escSafe(s.pix_key||'PIX ainda não configurado.')+'</div><div class="text-xs text-slate-400 mt-3">'+escSafe(s.pix_holder||'')+(s.pix_bank?' · '+escSafe(s.pix_bank):'')+'</div><div class="text-xs text-slate-500 mt-3">'+escSafe(s.pix_instructions||'Após o pagamento, registre a solicitação para análise do administrador.')+'</div></div><div class="flex gap-2 mt-5"><button onclick="window.ELITESaaS.confirmPlan(\''+code+'\')" class="flex-1 bg-emerald-600 rounded-xl py-3 font-bold">Registrar solicitação</button><button onclick="document.getElementById('pixModal').remove()" class="px-5 bg-slate-800 rounded-xl">Fechar</button></div></div></div>');
+  };
+}
 const escSafe=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 const notify=m=>typeof window.toast==='function'?window.toast(m):console.info('[ELITE QR]',m);
 const uidSafe=()=>crypto?.randomUUID?crypto.randomUUID():'id-'+Date.now()+'-'+Math.random().toString(36).slice(2);
